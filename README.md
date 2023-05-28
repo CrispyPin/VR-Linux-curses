@@ -1,5 +1,7 @@
-# VR Linux curses
+# VR+Linux curses
 This document is a compilation of issues that I have run into while using SteamVR and ChilloutVR on Linux. Some things have solutions, some have workarounds, and some are just cursed.
+
+I use Arch Linux and have a Radeon RX 6800XT GPU.
 
 # SteamVR
 ## Useful resources
@@ -31,24 +33,17 @@ On Some Systems™️ this manifests as persistent crashes instead.
 Fixed by adding `"enableLinuxVulkanAsync" : false` under `"steamvr" : {` in `~/.steam/steam/config/steamvr.vrsettings`..
 
 ## Rendering artifacts at edge of vision
-https://github.com/ValveSoftware/SteamVR-for-Linux/issues/500
-https://github.com/ValveSoftware/SteamVR-for-Linux/issues/480
-
 The edge of the screens were flickering grey garbage data. It seems to be the part of the screen that is normally supposed to be completely black, as it's barely visible.
 
-ePutting `RADV_DEBUG=zerovram %command%` in the SteamVR launch options fixes this.
+Putting `RADV_DEBUG=zerovram %command%` in the SteamVR launch options fixes this.
 
+- https://github.com/ValveSoftware/SteamVR-for-Linux/issues/500
+- https://github.com/ValveSoftware/SteamVR-for-Linux/issues/480
 
 ## SteamVR desktop overlay
-### The X11 bug (old)
-[libx11 issue 176](https://gitlab.freedesktop.org/xorg/lib/libx11/-/issues/176)
-For several months after december 16, 2022, there was a bug in the latest version (in the arch repos) of libx11, that caused the SteamVR desktop overlay to cause crashes.
-
-After opening the desktop a third time, or showing it for enough time, Steam would crash. Quite often SteamVR would also crash at that point, taking the open game with it.
-
-#### Fun ChilloutVR side effect
-If Steam crashed but SteamVR and ChilloutVR stayed open, it seemed fine (apart from the desktop overlay not working) until someone joined or left the world, or I switched world. It seems like when changing the number of connected users, ChilloutVR tries to tell Steam about it to change the rich presence (even if that is disabled), and then crashes if Steam is no longer running.
-
+### Alternatives
+- https://github.com/CrispyPin/sinpin-vr/
+- https://github.com/galister/WlxOverlay/
 
 ### Reliability
 Sometimes the desktop overlay just fails to start (says "no desktop found"), usually works to just try again a few times. Many people have this issue always and cannot use it at all.
@@ -60,10 +55,14 @@ The cursor position is not mapped to where you are pointing, instead the full al
 ### Full-body trackers
 If any full-body trackers are on and connected, launching SteamVR will *always* fail to start the desktop view. This is especially annoying since Tundra trackers turn themselves on when you charge them.
 
-### Alternatives
-https://github.com/crispyPin/sinpin-vr/
-https://github.com/galister/WlxOverlay/
+### The X11 bug (fixed)
+[libx11 issue 176](https://gitlab.freedesktop.org/xorg/lib/libx11/-/issues/176)
+For several months after december 16, 2022, there was a bug in the latest version (in the arch repos) of libx11, that caused the SteamVR desktop overlay to cause crashes.
 
+After opening the desktop a third time, or showing it for enough time, Steam would crash. Quite often SteamVR would also crash at that point, taking the open game with it.
+
+#### Fun ChilloutVR side effect
+If Steam crashed but SteamVR and ChilloutVR stayed open, it seemed fine (apart from the desktop overlay not working) until someone joined or left the world, or I switched world. It seems like when changing the number of connected users, ChilloutVR tries to tell Steam about it to change the rich presence (even if that is disabled), and then crashes if Steam is no longer running.
 
 # ChilloutVR
 ## Video players
@@ -76,9 +75,11 @@ https://github.com/galister/WlxOverlay/
 Video players can be disabled completely with `--disable-videoplayers` in the ChilloutVR launch options.
 
 ## MelonLoader
+[Official MelonLoader Linux installation instructions for Proton games](https://melonwiki.xyz/#/README?id=linux-instructions)
+
 On Some Systems™️, MelonLoader (and the modded game) will not start unless you put `--melonloader.hideconsole` in the launch options. (I have been told not everyone needs this)
 
-[Official MelonLoader Linux installation instructions for Proton games](https://melonwiki.xyz/#/README?id=linux-instructions)
+**Note:** I currently (May 2023) use MelonLoader v0.5.5. I have had mixed success with different versions so I tend not to keep it up to date. If one version doesn't work it may be worth trying another one.
 
 <!--
 (These instructions are out of date, use the official ones above instead.)
@@ -92,12 +93,12 @@ On Some Systems™️, MelonLoader (and the modded game) will not start unless y
 ## The 2-minute crash
 Several things can cause ChilloutVR to crash about 2 minutes in to the session, with nothing useful in the logs. This can happen in VRChat too, but was less predictable there and seemed to come and go with updates.
 
-### config files
+### Config files
 On Some Systems™️, having *any* config files in the games config directory (see below) will cause this crash. Removing them or replacing all of them with symlinks to `/dev/null` works, but then you no longer have settings saved. I made [a mod (ConfigHack)](https://github.com/CrispyPin/CVR-ConfigHack) that loads the main settings from a different file instead, and this works (for me) for some reason.
 
 The config directory is usually `~/.steam/steam/steamapps/compatdata/661130/pfx/drive_c/users/steamuser/AppData/LocalLow/Alpha\ Blend\ Interactive/ChilloutVR/`
 
-#### in combination with the Zen kernel
+#### In combination with the Zen kernel
 Since I switched to `linux-zen`, having config files no longer caused the 2-minute crash. **However**, ChilloutVR started leaking around 0.3GB per minute, and the kernel seemed to be using another 10GB for no apparent reason. Thus I reverted to using `/dev/null` symlinks and the ConfigHack mod.
 
 ### UIExpansionKit
