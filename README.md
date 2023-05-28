@@ -1,4 +1,4 @@
-# Curses
+# VR Linux curses
 This document is a compilation of issues that I have run into while using SteamVR and ChilloutVR on Linux. Some things have solutions, some have workarounds, and some are just cursed.
 
 # SteamVR
