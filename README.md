@@ -30,7 +30,7 @@ All overlays, controller models and the SteamVR void (everything that SteamVR or
 
 On Some Systems™️ this manifests as persistent crashes instead.
 
-Fixed by adding `"enableLinuxVulkanAsync" : false` under `"steamvr" : {` in `~/.steam/steam/config/steamvr.vrsettings`..
+Fixed by adding `"enableLinuxVulkanAsync" : false` under `"steamvr" : {` in `~/.steam/steam/config/steamvr.vrsettings`.
 
 ## Rendering artifacts at edge of vision
 The edge of the screens were flickering grey garbage data. It seems to be the part of the screen that is normally supposed to be completely black, as it's barely visible.
@@ -39,6 +39,11 @@ Putting `RADV_DEBUG=zerovram %command%` in the SteamVR launch options fixes this
 
 - https://github.com/ValveSoftware/SteamVR-for-Linux/issues/500
 - https://github.com/ValveSoftware/SteamVR-for-Linux/issues/480
+
+## No steamvr overlay or settings window
+In some cases this can be fixed by overriding the version of freetype used, following [these instructions](https://www.gamingonlinux.com/2021/11/steamvr-overlay-not-working-on-arch-or-manjaro-linux-heres-a-fix/). I used this fix between january and july 2022, after which it or something else broke steamvr, and i did not need it again.
+
+It is also worth trying the SteamVR `Linux-v1.14` legacy beta branch, this version seems more reliable but it is quite outdated by now so many if not most games may not work or have other weird issues with it.
 
 ## SteamVR desktop overlay
 ### Alternatives
